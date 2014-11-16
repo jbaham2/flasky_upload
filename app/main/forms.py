@@ -16,7 +16,13 @@ class EditProfileForm(Form):
     name = StringField('Real name', validators=[Length(0, 64)])
     location = StringField('Location', validators=[Length(0, 64)])
     about_me = TextAreaField('About me')
+    user_avatar = FileField('Upload an image file', validators=[Regexp(u'^[^/\\]\.jpg$')])
     submit = SubmitField('Submit')
+
+    if field.data.filename[-4:].lower() != '.jpg':
+            raise ValidationError('Invalid file extension')
+        if imghdr.what(field.data) != 'jpeg':
+            raise ValidationError('Invalid image format')
 
 
 class EditProfileAdminForm(Form):
