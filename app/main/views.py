@@ -2,9 +2,12 @@ from flask import render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response
 from flask.ext.login import login_required, current_user
 from flask.ext.sqlalchemy import get_debug_queries
+from flask.ext.wtf import Form
+from werkzeug import secure_filename
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm,\
     CommentForm
+
 from .. import db
 from ..models import Permission, Role, User, Post, Comment
 from ..decorators import admin_required, permission_required
@@ -72,17 +75,26 @@ def user(username):
 @main.route('/edit-profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
+    image = None
     form = EditProfileForm()
     if form.validate_on_submit():
         current_user.name = form.name.data
         current_user.location = form.location.data
         current_user.about_me = form.about_me.data
+        current_user.user_avatar = form.user_avatar.data
+        if form.user_avatar.data: 
+            image_file = request.files['user_avatar']
+            if image_file and form.user_avatar.is_image_allowed():
+                filename = secure_filename(image_file.filename)
+                file_path = os.path.join(current_app.config['UPLOAD_DIR'])
+                image_file.save(file_path)
         db.session.add(current_user)
         flash('Your profile has been updated.')
         return redirect(url_for('.user', username=current_user.username))
     form.name.data = current_user.name
     form.location.data = current_user.location
     form.about_me.data = current_user.about_me
+    form.user_avatar.data = current_user.user_avatar
     return render_template('edit_profile.html', form=form)
 
 
