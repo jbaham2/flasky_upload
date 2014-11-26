@@ -21,10 +21,11 @@ class EditProfileForm(Form):
     user_avatar = FileField('Upload an image file', validators=[])
     submit = SubmitField('Submit')
 
-    def is_image_allowed(form, field):
-        if field[-4:].lower() not in current_app.config['ALLOWED_IMG_EXTENSIONS']:
+    def is_image_allowed(self):
+        field = self.user_avatar.data
+        if field.filename.lower()[-4:] not in current_app.config['ALLOWED_IMG_EXTENSIONS']:
             raise ValidationError('Invalid file extension')
-        if imghdr.what(field.data) != 'jpeg' or 'png':
+        if imghdr.what(field.filename) != 'jpeg' and imghdr.what(field.filename) != 'png':
             raise ValidationError('Invalid image format')
 
 

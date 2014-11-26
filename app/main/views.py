@@ -7,6 +7,7 @@ from werkzeug import secure_filename
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm,\
     CommentForm
+import os
 
 from .. import db
 from ..models import Permission, Role, User, Post, Comment
@@ -81,12 +82,12 @@ def edit_profile():
         current_user.name = form.name.data
         current_user.location = form.location.data
         current_user.about_me = form.about_me.data
-        current_user.user_avatar = form.user_avatar.data
+        current_user.user_avatar = os.path.join(current_app.config['UPLOAD_DIR'],form.user_avatar.data.filename)
         if form.user_avatar.data: 
             image_file = request.files['user_avatar']
-            if image_file and form.user_avatar.is_image_allowed():
+            if image_file and form.is_image_allowed():
                 filename = secure_filename(image_file.filename)
-                file_path = os.path.join(current_app.config['UPLOAD_DIR'])
+                file_path = os.path.join(current_app.config['UPLOAD_DIR'],filename)
                 image_file.save(file_path)
         db.session.add(current_user)
         flash('Your profile has been updated.')
