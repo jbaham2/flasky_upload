@@ -27,6 +27,7 @@ class EditProfileForm(Form):
             raise ValidationError('Invalid file extension')
         if imghdr.what(field.filename) != 'jpeg' and imghdr.what(field.filename) != 'png':
             raise ValidationError('Invalid image format')
+        return True
 
 
 class EditProfileAdminForm(Form):
