@@ -1,5 +1,6 @@
 .profile-thumbnail {
     position: absolute;
+    max-height:45%;
 }
 .profile-header {
     min-height: 260px;
@@ -105,4 +106,10 @@ div.flask-pagedown-preview h3 {
 }
 .table.followers tr {
     border-bottom: 1px solid #e0e0e0;
+}
+body > div.navbar.navbar-inverse > div > div.navbar-collapse.collapse > ul.nav.navbar-nav.navbar-right > li > a > img {
+    height: 49px;
+    margin-top: -22px;
+    margin-bottom: -20px;
+    display:inline-block;
 }
