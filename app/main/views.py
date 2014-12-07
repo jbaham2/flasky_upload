@@ -1,8 +1,9 @@
 import os
 import hashlib
+import pdb
 from datetime import datetime
 from flask import render_template, redirect, url_for, abort, flash, request,\
-    current_app, make_response
+    current_app, make_response, send_from_directory
 from flask.ext.login import login_required, current_user
 from flask.ext.sqlalchemy import get_debug_queries
 from flask.ext.wtf import Form
@@ -87,7 +88,7 @@ def edit_profile():
         current_user.user_avatar = os.path.join(current_app.config['UPLOAD_DIR'],form.user_avatar.data.filename)
         if form.user_avatar.data: 
             image_file = request.files['user_avatar']
-            if image_file and form.is_image_allowed():
+            if image_file and form.is_image_allowed() and current_app.config['MAX_CONTENT_LENGTH']:
                 filename = avatar_hash(image_file.filename)
                 file_path = os.path.join(current_app.config['UPLOAD_DIR'],filename)
                 image_file.save(file_path)
@@ -105,6 +106,10 @@ def avatar_hash(filename):
     file_ext = filename[-4:].lower()
     filename = hash + file_ext
     return filename 
+
+@main.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(current_app.config['UPLOAD_DIR'], filename)
 
 
 

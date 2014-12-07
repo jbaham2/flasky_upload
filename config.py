@@ -21,6 +21,7 @@ class Config:
     FLASKY_SLOW_DB_QUERY_TIME=0.5
     UPLOAD_DIR = os.path.join(basedir, 'app/static/uploads')
     ALLOWED_IMG_EXTENSIONS = set(['.png', '.jpg', '.jpeg'])
+    MAX_CONTENT_LENGTH = 6 * 1024 * 1024
 
     @staticmethod
     def init_app(app):
