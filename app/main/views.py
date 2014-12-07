@@ -1,3 +1,6 @@
+import os
+import hashlib
+from datetime import datetime
 from flask import render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response
 from flask.ext.login import login_required, current_user
@@ -7,7 +10,6 @@ from werkzeug import secure_filename
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm,\
     CommentForm
-import os
 
 from .. import db
 from ..models import Permission, Role, User, Post, Comment
@@ -86,7 +88,7 @@ def edit_profile():
         if form.user_avatar.data: 
             image_file = request.files['user_avatar']
             if image_file and form.is_image_allowed():
-                filename = secure_filename(image_file.filename)
+                filename = avatar_hash(image_file.filename)
                 file_path = os.path.join(current_app.config['UPLOAD_DIR'],filename)
                 image_file.save(file_path)
         db.session.add(current_user)
@@ -97,6 +99,13 @@ def edit_profile():
     form.about_me.data = current_user.about_me
     form.user_avatar.data = current_user.user_avatar
     return render_template('edit_profile.html', form=form)
+
+def avatar_hash(filename):
+    hash = hashlib.md5(current_user.username.encode('utf-8') + str(datetime.now()).encode('utf-8')).hexdigest()
+    file_ext = filename[-4:].lower()
+    filename = hash + file_ext
+    return filename 
+
 
 
 @main.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
